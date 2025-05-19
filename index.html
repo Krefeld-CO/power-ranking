@@ -1,76 +1,76 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Power Ranking Torneo</title>
+  <meta charset="UTF-8">
+  <title>Power Ranking</title>
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
+      font-family: Arial, sans-serif;
       padding: 20px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
       text-align: center;
     }
-
-    h1 {
-      color: #111;
-    }
-
-    table {
-      margin: 0 auto;
-      border-collapse: collapse;
-      width: 90%;
-      background-color: white;
-    }
-
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
-    }
-
     th {
-      background-color: #f0f0f0;
+      background-color: #4CAF50;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
     }
   </style>
 </head>
 <body>
-  <h1>Power Ranking Torneo</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Jugador</th>
-        <th>Score</th>
-        <th>W</th>
-        <th>L</th>
-        <th>WR</th>
-      </tr>
-    </thead>
-    <tbody id="ranking-body">
-      <!-- Filas se insertarán aquí -->
-    </tbody>
-  </table>
+  <h1>Power Ranking</h1>
+  <div id="tabla-container">Cargando datos...</div>
 
   <script>
-    fetch("https://opensheet.elk.sh/1in-uoSlavwHjXlUQMfZuXwWJPGMIqeWFZVb9-YF_AVI/Hoja%201")
-      .then(res => res.json())
-      .then(data => {
-        const tbody = document.getElementById("ranking-body");
-        data.forEach(row => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${row.Jugador}</td>
-            <td>${row.Score}</td>
-            <td>${row.W}</td>
-            <td>${row.L}</td>
-            <td>${row.WR}</td>
-          `;
-          tbody.appendChild(tr);
+    async function cargarCSV(url) {
+      const response = await fetch(url);
+      const texto = await response.text();
+      return texto;
+    }
+
+    function convertirCSVaTabla(csv) {
+      const filas = csv.trim().split("\n");
+      const tabla = document.createElement("table");
+
+      filas.forEach((fila, index) => {
+        const columnas = fila.split(",");
+        const filaHTML = document.createElement("tr");
+
+        columnas.forEach(col => {
+          const celda = document.createElement(index === 0 ? "th" : "td");
+          celda.textContent = col;
+          filaHTML.appendChild(celda);
         });
-      })
-      .catch(err => {
-        console.error("Error cargando datos:", err);
+
+        tabla.appendChild(filaHTML);
       });
+
+      return tabla;
+    }
+
+    const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3yIlHDYrXpteR_emzXy_PO7fcm4_RdjTAEssC5iooIhv2LdHXWWQUSvUiorYnIOYTMAwfVygE6bO/pub?gid=1179758971&single=true&output=csv";
+
+    cargarCSV(URL_CSV).then(csv => {
+      const tabla = convertirCSVaTabla(csv);
+      document.getElementById("tabla-container").innerHTML = "";
+      document.getElementById("tabla-container").appendChild(tabla);
+    });
   </script>
 </body>
 </html>
