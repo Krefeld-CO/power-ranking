@@ -3,91 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tabla desde Google Sheets</title>
+  <title>Power Ranking</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+      font-family: sans-serif;
+      margin: 40px;
+      background: #f9f9f9;
+    }
+    h1 {
       text-align: center;
     }
-
     table {
-      width: 90%;
-      margin: 0 auto;
       border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+      background: white;
     }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-
-    th {
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-
-    /* ✅ Mejora 1: Sombreado al pasar el mouse */
     tr:hover {
       background-color: #f1f1f1;
     }
-
-    #fecha-actualizacion {
-      color: #666;
-      margin-top: 10px;
-      font-size: 0.9em;
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #eee;
+      cursor: pointer;
+      position: relative;
+    }
+    th::after {
+      content: "⇅";
+      font-size: 0.8em;
+      position: absolute;
+      right: 10px;
+      color: #888;
     }
   </style>
 </head>
 <body>
-  <h1>Ranking de Jugadores</h1>
+  <h1>Power Ranking</h1>
   <table id="tabla"></table>
-  <!-- ✅ Mejora 3: Contenedor para la fecha -->
-  <p id="fecha-actualizacion"></p>
 
   <script>
-    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnpA0PQMRBlyTDqLZB7DCsy6E4CoxdALNGeJhlNWYv4UAr4MM0dZnMbgc7aZECJibQ-icmlQQqKeC/pub?gid=0&single=true&output=csv";
-
     let datosOriginales = [];
-    let ordenAscendente = true;
-    let columnaOrdenActual = null;
-
-    fetch(url)
-      .then(response => response.text())
-      .then(data => {
-        const filas = data.trim().split("\n").map(f => f.split(","));
-        datosOriginales = filas;
-        crearTabla(filas);
-
-        // ✅ Mejora 3: Mostrar fecha de última actualización
-        const fecha = new Date();
-        document.getElementById("fecha-actualizacion").textContent =
-          `Última actualización: ${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}`;
-      });
+    let ordenAscendente = {};
 
     function crearTabla(datos) {
       const tabla = document.getElementById("tabla");
-      tabla.innerHTML = "";
+      tabla.innerHTML = ""; // limpiar tabla
 
       datos.forEach((fila, i) => {
         const tr = document.createElement("tr");
-
         fila.forEach((col, j) => {
           const celda = document.createElement(i === 0 ? "th" : "td");
           celda.textContent = col;
 
+          // si es encabezado, agrega evento de ordenamiento
           if (i === 0) {
             celda.addEventListener("click", () => ordenarPorColumna(j));
           }
 
           tr.appendChild(celda);
         });
-
         tabla.appendChild(tr);
       });
     }
@@ -96,26 +74,30 @@
       const encabezado = datosOriginales[0];
       const filas = datosOriginales.slice(1);
 
-      const esNumero = !isNaN(parseFloat(filas[0][indice]));
+      // detectar si es numérico
+      const esNumerico = filas.every(f => !isNaN(parseFloat(f[indice])));
+
+      const asc = !ordenAscendente[indice];
+      ordenAscendente[indice] = asc;
 
       filas.sort((a, b) => {
-        const valorA = esNumero ? parseFloat(a[indice]) : a[indice].toLowerCase();
-        const valorB = esNumero ? parseFloat(b[indice]) : b[indice].toLowerCase();
-
-        if (valorA < valorB) return ordenAscendente ? -1 : 1;
-        if (valorA > valorB) return ordenAscendente ? 1 : -1;
+        const valA = esNumerico ? parseFloat(a[indice]) : a[indice].toLowerCase();
+        const valB = esNumerico ? parseFloat(b[indice]) : b[indice].toLowerCase();
+        if (valA < valB) return asc ? -1 : 1;
+        if (valA > valB) return asc ? 1 : -1;
         return 0;
       });
 
-      if (columnaOrdenActual === indice) {
-        ordenAscendente = !ordenAscendente;
-      } else {
-        ordenAscendente = true;
-        columnaOrdenActual = indice;
-      }
-
       crearTabla([encabezado, ...filas]);
     }
+
+    fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3yIlHDYrXpteR_emzXy_PO7fcm4_RdjTAEssC5iooIhv2LdHXWWQUSvUiorYnIOYTMAwfVygE6bO/pub?gid=1179758971&single=true&output=csv")
+      .then(response => response.text())
+      .then(data => {
+        const filas = data.trim().split("\n").map(f => f.split(","));
+        datosOriginales = filas;
+        crearTabla(filas);
+      });
   </script>
 </body>
 </html>
