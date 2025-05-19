@@ -1,75 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Power Ranking</title>
-  <!-- DataTables CSS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-  <!-- DataTables JS -->
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <!-- Tabletop.js -->
-  <script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0/tabletop.min.js"></script>
-
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"/>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
     }
-    table {
-      width: 100%;
-    }
     h1 {
       text-align: center;
-      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-
   <h1>Power Ranking</h1>
-  <table id="ranking" class="display">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Puntaje</th>
-        <th>Partidas ganadas</th>
-        <th>Partidas perdidas</th>
-        <th>Win rate</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <table id="ranking" class="display"></table>
 
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script>
-    function iniciarTabla(datos) {
-      const cuerpo = $('#ranking tbody');
-      datos.forEach(fila => {
-        cuerpo.append(`
-          <tr>
-            <td>${fila.Nombre}</td>
-            <td>${fila.Puntaje}</td>
-            <td>${fila.Ganadas}</td>
-            <td>${fila.Perdidas}</td>
-            <td>${fila['Win rate']}</td>
-          </tr>
-        `);
-      });
-
-      $('#ranking').DataTable({
-        order: [[1, 'desc']]
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      Tabletop.init({
-        key: '1in-uoSlavwHjXlUQMfZuXwWJPGMIqeWFZVb9-YF_AVI',
-        simpleSheet: true,
-        callback: iniciarTabla
-      });
-    });
-  </script>
-
-</body>
-</html>
+    $(document).ready(function () {
+      fetch("https://opensheet.elk.sh/1in-uoSlavwHjXlUQMfZuXwWJPGMIqeWFZVb9-YF_AVI/Power Ranking")
