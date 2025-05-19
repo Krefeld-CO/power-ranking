@@ -6,32 +6,37 @@
   <title>Power Ranking Torneo</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
       padding: 20px;
-      background: #f9f9f9;
-    }
-    h1 {
       text-align: center;
     }
+
+    h1 {
+      color: #111;
+    }
+
     table {
-      margin: auto;
+      margin: 0 auto;
       border-collapse: collapse;
       width: 90%;
       background-color: white;
     }
+
     th, td {
-      border: 1px solid #ccc;
       padding: 10px;
-      text-align: center;
+      border: 1px solid #ddd;
     }
+
     th {
-      background-color: #eee;
+      background-color: #f0f0f0;
     }
   </style>
 </head>
 <body>
   <h1>Power Ranking Torneo</h1>
-  <table id="rankingTable">
+  <table>
     <thead>
       <tr>
         <th>Jugador</th>
@@ -41,15 +46,17 @@
         <th>WR</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="ranking-body">
+      <!-- Filas se insertarán aquí -->
+    </tbody>
   </table>
 
   <script>
-    fetch("https://opensheet.elk.sh/1in-uoSlavwHjXlUQMfZuXwWJPGMIqeWFZVb9-YF_AVI/Power Ranking")
-      .then((response) => response.json())
-      .then((data) => {
-        const tableBody = document.querySelector("#rankingTable tbody");
-        data.forEach((row) => {
+    fetch("https://opensheet.elk.sh/1in-uoSlavwHjXlUQMfZuXwWJPGMIqeWFZVb9-YF_AVI/Hoja%201")
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.getElementById("ranking-body");
+        data.forEach(row => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${row.Jugador}</td>
@@ -58,11 +65,11 @@
             <td>${row.L}</td>
             <td>${row.WR}</td>
           `;
-          tableBody.appendChild(tr);
+          tbody.appendChild(tr);
         });
       })
-      .catch((error) => {
-        console.error("Error al cargar los datos:", error);
+      .catch(err => {
+        console.error("Error cargando datos:", err);
       });
   </script>
 </body>
