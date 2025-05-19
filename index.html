@@ -6,21 +6,22 @@
   <title>Power Ranking Torneo</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
       padding: 20px;
-      background-color: #f7f7f7;
+      background: #f9f9f9;
     }
     h1 {
       text-align: center;
     }
     table {
-      width: 100%;
+      margin: auto;
       border-collapse: collapse;
+      width: 90%;
       background-color: white;
     }
     th, td {
       border: 1px solid #ccc;
-      padding: 8px;
+      padding: 10px;
       text-align: center;
     }
     th {
@@ -30,7 +31,7 @@
 </head>
 <body>
   <h1>Power Ranking Torneo</h1>
-  <table id="tabla-ranking">
+  <table id="rankingTable">
     <thead>
       <tr>
         <th>Jugador</th>
@@ -44,28 +45,25 @@
   </table>
 
   <script>
-    // ID de tu hoja de cálculo
-    const sheetID = "1in-uoSlawwHjXlUQMfZuXwWJPGMlqeWFZVb9-YF_AVI";
-    const sheetName = "Power Ranking";
-    const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
-
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const tabla = document.querySelector("#tabla-ranking tbody");
-        data.forEach(jugador => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${jugador["Jugador"]}</td>
-            <td>${jugador["Score"]}</td>
-            <td>${jugador["W"]}</td>
-            <td>${jugador["L"]}</td>
-            <td>${jugador["WR"]}</td>
+    fetch("https://opensheet.elk.sh/1in-uoSlavwHjXlUQMfZuXwWJPGMIqeWFZVb9-YF_AVI/Power Ranking")
+      .then((response) => response.json())
+      .then((data) => {
+        const tableBody = document.querySelector("#rankingTable tbody");
+        data.forEach((row) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${row.Jugador}</td>
+            <td>${row.Score}</td>
+            <td>${row.W}</td>
+            <td>${row.L}</td>
+            <td>${row.WR}</td>
           `;
-          tabla.appendChild(row);
+          tableBody.appendChild(tr);
         });
       })
-      .catch(error => console.error("Error al obtener los datos:", error));
+      .catch((error) => {
+        console.error("Error al cargar los datos:", error);
+      });
   </script>
 </body>
 </html>
