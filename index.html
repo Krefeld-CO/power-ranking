@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Power Ranking</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2em;
+    }
+    table {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Power Ranking</h1>
+  <table id="ranking" class="display"></table>
+
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $.ajax({
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3yIlHDYrXpteR_emzXy_PO7fcm4_RdjTAEssC5iooIhv2LdHXWWQUSvUiorYnIOYTMAwfVygE6bO/pub?gid=1179758971&single=true&output=csv",
+        dataType: "text",
+        success: function(data) {
+          let rows = data.trim().split("\n").map(row => row.split(","));
+          let headers = rows.shift();
+          $('#ranking').DataTable({
+            data: rows,
+            columns: headers.map(title => ({ title })),
+            order: [[1, "desc"]]
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
