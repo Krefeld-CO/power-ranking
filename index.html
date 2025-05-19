@@ -15,10 +15,21 @@
       text-align: center;
       color: #ffffff;
     }
+    .buscador-container {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    .buscador-container input {
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background-color: #1e1e1e;
+      color: #fff;
+    }
     table {
       border-collapse: collapse;
       width: 100%;
-      margin-top: 20px;
       background: #181818;
     }
     tr:hover td {
@@ -52,6 +63,9 @@
 </head>
 <body>
   <h1>Power Ranking</h1>
+  <div class="buscador-container">
+    <input type="text" id="buscador" placeholder="Buscar jugador...">
+  </div>
   <table id="tabla"></table>
 
   <script>
@@ -60,7 +74,7 @@
 
     function crearTabla(datos) {
       const tabla = document.getElementById("tabla");
-      tabla.innerHTML = ""; // limpiar tabla
+      tabla.innerHTML = "";
 
       datos.forEach((fila, i) => {
         const tr = document.createElement("tr");
@@ -68,7 +82,6 @@
           const celda = document.createElement(i === 0 ? "th" : "td");
           celda.textContent = col;
 
-          // si es encabezado, agrega evento de ordenamiento
           if (i === 0) {
             celda.addEventListener("click", () => ordenarPorColumna(j));
           }
@@ -83,7 +96,6 @@
       const encabezado = datosOriginales[0];
       const filas = datosOriginales.slice(1);
 
-      // detectar si es numérico
       const esNumerico = filas.every(f => !isNaN(parseFloat(f[indice])));
 
       const asc = !ordenAscendente[indice];
@@ -98,7 +110,22 @@
       });
 
       crearTabla([encabezado, ...filas]);
+      aplicarFiltro(); // aplicar filtro nuevamente después de ordenar
     }
+
+    function aplicarFiltro() {
+      const input = document.getElementById("buscador").value.toLowerCase();
+      const filas = document.querySelectorAll("#tabla tr");
+
+      filas.forEach((fila, i) => {
+        if (i === 0) return; // saltar encabezado
+
+        const textoFila = fila.textContent.toLowerCase();
+        fila.style.display = textoFila.includes(input) ? "" : "none";
+      });
+    }
+
+    document.getElementById("buscador").addEventListener("input", aplicarFiltro);
 
     fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3yIlHDYrXpteR_emzXy_PO7fcm4_RdjTAEssC5iooIhv2LdHXWWQUSvUiorYnIOYTMAwfVygE6bO/pub?gid=1179758971&single=true&output=csv")
       .then(response => response.text())
