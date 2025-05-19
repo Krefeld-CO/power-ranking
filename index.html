@@ -65,6 +65,11 @@
     tr:nth-child(even) td {
       background-color: #141414;
     }
+    img {
+      width: 256px;
+      height: 128px;
+      object-fit: contain;
+    }
   </style>
 </head>
 <body>
@@ -96,7 +101,15 @@
             celda.appendChild(icono);
             celda.addEventListener("click", () => ordenarPorColumna(j));
           } else {
-            celda.textContent = col;
+            // Si es la segunda columna (índice 1) mostramos la imagen
+            if (j === 1) {
+              const img = document.createElement("img");
+              img.src = col;
+              img.alt = "Imagen";
+              celda.appendChild(img);
+            } else {
+              celda.textContent = col;
+            }
           }
 
           tr.appendChild(celda);
