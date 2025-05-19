@@ -31,42 +31,27 @@
       border-collapse: collapse;
       width: 100%;
       background: #181818;
-      position: relative;
     }
     tr:hover td {
-      background-color: #2a2a2a;
+      background-color: #2a2a2a !important;
     }
     th, td {
       border: 1px solid #333;
       padding: 12px 10px;
       text-align: center;
-      position: relative;
     }
     th {
       background-color: #1e1e1e;
       color: #ffffff;
       cursor: pointer;
-      position: sticky; /* para encabezado fijo */
-      top: 0;
-      z-index: 10;
+      position: relative;
     }
     th::after {
-      content: "▲▼";         /* doble triángulo gris por defecto */
+      content: "⇅";
+      font-size: 0.8em;
       position: absolute;
       right: 10px;
-      font-size: 0.7em;
-      color: #666666;        /* gris claro */
-      user-select: none;
-    }
-    /* Flecha ascendente */
-    th.asc::after {
-      content: "▲";
-      color: #4caf50;        /* verde */
-    }
-    /* Flecha descendente */
-    th.desc::after {
-      content: "▼";
-      color: #f44336;        /* rojo */
+      color: #aaaaaa;
     }
     td {
       color: #dddddd;
@@ -86,7 +71,7 @@
   <script>
     let datosOriginales = [];
     let ordenAscendente = {};
-    
+
     function crearTabla(datos) {
       const tabla = document.getElementById("tabla");
       tabla.innerHTML = "";
@@ -105,7 +90,6 @@
         });
         tabla.appendChild(tr);
       });
-      actualizarFlechas();
     }
 
     function ordenarPorColumna(indice) {
@@ -114,10 +98,7 @@
 
       const esNumerico = filas.every(f => !isNaN(parseFloat(f[indice])));
 
-      // Cambiar sentido de orden para la columna clickeada
       const asc = !ordenAscendente[indice];
-      // Resetear estados de orden de todas columnas excepto la actual
-      ordenAscendente = {};
       ordenAscendente[indice] = asc;
 
       filas.sort((a, b) => {
@@ -141,18 +122,6 @@
 
         const textoFila = fila.textContent.toLowerCase();
         fila.style.display = textoFila.includes(input) ? "" : "none";
-      });
-    }
-
-    function actualizarFlechas() {
-      const ths = document.querySelectorAll("#tabla th");
-      ths.forEach((th, i) => {
-        th.classList.remove("asc", "desc");
-        if (ordenAscendente[i] === true) {
-          th.classList.add("asc");
-        } else if (ordenAscendente[i] === false) {
-          th.classList.add("desc");
-        }
       });
     }
 
