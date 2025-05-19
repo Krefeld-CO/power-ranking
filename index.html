@@ -3,97 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Power Ranking</title>
+  <title>Tabla de Jugadores</title>
   <style>
     body {
       font-family: sans-serif;
-      margin: 40px;
-      background: #f9f9f9;
-    }
-    h1 {
-      text-align: center;
+      padding: 2rem;
     }
     table {
       border-collapse: collapse;
       width: 100%;
-      margin-top: 20px;
-      background: white;
     }
     th, td {
       border: 1px solid #ccc;
-      padding: 10px;
-      text-align: center;
+      padding: 0.5rem;
+      text-align: left;
     }
     th {
-      background-color: #eee;
+      background-color: #f5f5f5;
       cursor: pointer;
-      position: relative;
     }
-    th::after {
-      content: "⇅";
-      font-size: 0.8em;
-      position: absolute;
-      right: 10px;
-      color: #888;
+    .up {
+      color: green;
+    }
+    .down {
+      color: red;
+    }
+    .same {
+      color: gray;
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Power Ranking</h1>
-  <table id="tabla"></table>
+  <h1>Clasificación de Jugadores</h1>
+  <table id="tabla-jugadores">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
 
   <script>
-    let datosOriginales = [];
-    let ordenAscendente = {};
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3yIlHDYrXpteR_emzXy_PO7fcm4_RdjTAEssC5iooIhv2LdHXWWQUSvUiorYnIOYTMAwfVygE6bO/pub?gid=1179758971&single=true&output=csv";
 
-    function crearTabla(datos) {
-      const tabla = document.getElementById("tabla");
-      tabla.innerHTML = ""; // limpiar tabla
-
-      datos.forEach((fila, i) => {
-        const tr = document.createElement("tr");
-        fila.forEach((col, j) => {
-          const celda = document.createElement(i === 0 ? "th" : "td");
-          celda.textContent = col;
-
-          // si es encabezado, agrega evento de ordenamiento
-          if (i === 0) {
-            celda.addEventListener("click", () => ordenarPorColumna(j));
-          }
-
-          tr.appendChild(celda);
-        });
-        tabla.appendChild(tr);
-      });
-    }
-
-    function ordenarPorColumna(indice) {
-      const encabezado = datosOriginales[0];
-      const filas = datosOriginales.slice(1);
-
-      // detectar si es numérico
-      const esNumerico = filas.every(f => !isNaN(parseFloat(f[indice])));
-
-      const asc = !ordenAscendente[indice];
-      ordenAscendente[indice] = asc;
-
-      filas.sort((a, b) => {
-        const valA = esNumerico ? parseFloat(a[indice]) : a[indice].toLowerCase();
-        const valB = esNumerico ? parseFloat(b[indice]) : b[indice].toLowerCase();
-        if (valA < valB) return asc ? -1 : 1;
-        if (valA > valB) return asc ? 1 : -1;
-        return 0;
-      });
-
-      crearTabla([encabezado, ...filas]);
-    }
-
-    fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vRt3yIlHDYrXpteR_emzXy_PO7fcm4_RdjTAEssC5iooIhv2LdHXWWQUSvUiorYnIOYTMAwfVygE6bO/pub?gid=1179758971&single=true&output=csv")
+    fetch(CSV_URL)
       .then(response => response.text())
       .then(data => {
-        const filas = data.trim().split("\n").map(f => f.split(","));
-        datosOriginales = filas;
-        crearTabla(filas);
+        const rows = data.trim().split('\n').map(row => row.split(','));
+        const headers = rows[0];
+        const tbody = document.querySelector('#tabla-jugadores tbody');
+        const thead = document.querySelector('#tabla-jugadores thead');
+
+        // Detect indices de columnas especiales
+        const colAnterior = headers.indexOf("Clasificación anterior");
+        const colActual = headers.indexOf("Clasificación actual");
+
+        // Construir encabezado
+        const visibleHeaders = headers.map((h, i) =>
+          (i !== colAnterior && i !== colActual) ? `<th data-col="${i}">${h}</th>` : ''
+        ).join('');
+        thead.innerHTML = `<tr>${visibleHeaders}<th>Cambio</th></tr>`;
+
+        // Cuerpo
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          const visibleCells = row.map((cell, j) =>
+            (j !== colAnterior && j !== colActual) ? `<td>${cell}</td>` : ''
+          ).join('');
+
+          // Calcular diferencia
+          const actual = parseInt(row[colActual]);
+          const anterior = parseInt(row[colAnterior]);
+          let diffHTML = '<td class="same">➖</td>';
+
+          if (!isNaN(actual) && !isNaN(anterior)) {
+            const diff = anterior - actual;
+            if (diff > 0) {
+              diffHTML = `<td class="up">🔺 ${diff}</td>`;
+            } else if (diff < 0) {
+              diffHTML = `<td class="down">🔻 ${Math.abs(diff)}</td>`;
+            }
+          }
+
+          tbody.innerHTML += `<tr>${visibleCells}${diffHTML}</tr>`;
+        }
+
+        // Ordenar columnas al hacer clic
+        document.querySelectorAll("th[data-col]").forEach(th => {
+          th.addEventListener("click", () => {
+            const colIndex = parseInt(th.dataset.col);
+            const rowsArray = Array.from(tbody.querySelectorAll("tr"));
+
+            const isNumeric = !isNaN(rows[1][colIndex].replace(',', '.'));
+            const ascending = !th.classList.contains("asc");
+
+            rowsArray.sort((a, b) => {
+              const aText = a.children[colIndex].innerText;
+              const bText = b.children[colIndex].innerText;
+              const valA = isNumeric ? parseFloat(aText.replace(',', '.')) : aText;
+              const valB = isNumeric ? parseFloat(bText.replace(',', '.')) : bText;
+
+              return ascending ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+            });
+
+            tbody.innerHTML = '';
+            rowsArray.forEach(tr => tbody.appendChild(tr));
+
+            document.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
+            th.classList.add(ascending ? "asc" : "desc");
+          });
+        });
       });
   </script>
 </body>
