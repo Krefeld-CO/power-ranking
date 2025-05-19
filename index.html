@@ -49,18 +49,15 @@
       position: sticky;
       z-index: 2;
     }
-    th::after {
-      content: "⇅";
-      font-size: 0.8em;
-      position: absolute;
-      right: 10px;
-      color: #aaaaaa;
-    }
     td {
       color: #dddddd;
     }
     tr:nth-child(even) td {
       background-color: #141414;
+    }
+    .arrow {
+      margin-left: 8px;
+      font-size: 0.8em;
     }
   </style>
 </head>
@@ -74,6 +71,7 @@
   <script>
     let datosOriginales = [];
     let ordenAscendente = {};
+    let ultimoIndiceOrdenado = -1;
 
     function crearTabla(datos) {
       const tabla = document.getElementById("tabla");
@@ -83,10 +81,22 @@
         const tr = document.createElement("tr");
         fila.forEach((col, j) => {
           const celda = document.createElement(i === 0 ? "th" : "td");
-          celda.textContent = col;
 
           if (i === 0) {
+            celda.textContent = col;
+            const arrow = document.createElement("span");
+            arrow.className = "arrow";
+            if (j === ultimoIndiceOrdenado) {
+              arrow.textContent = ordenAscendente[j] ? "▲" : "▼";
+              arrow.style.color = ordenAscendente[j] ? "#00cc44" : "#ff3333";
+            } else {
+              arrow.textContent = "▲";
+              arrow.style.color = "#aaa";
+            }
+            celda.appendChild(arrow);
             celda.addEventListener("click", () => ordenarPorColumna(j));
+          } else {
+            celda.textContent = col;
           }
 
           tr.appendChild(celda);
@@ -103,6 +113,7 @@
 
       const asc = !ordenAscendente[indice];
       ordenAscendente[indice] = asc;
+      ultimoIndiceOrdenado = indice;
 
       filas.sort((a, b) => {
         const valA = esNumerico ? parseFloat(a[indice]) : a[indice].toLowerCase();
@@ -113,7 +124,7 @@
       });
 
       crearTabla([encabezado, ...filas]);
-      aplicarFiltro(); // aplicar filtro nuevamente después de ordenar
+      aplicarFiltro();
     }
 
     function aplicarFiltro() {
@@ -121,8 +132,7 @@
       const filas = document.querySelectorAll("#tabla tr");
 
       filas.forEach((fila, i) => {
-        if (i === 0) return; // saltar encabezado
-
+        if (i === 0) return;
         const textoFila = fila.textContent.toLowerCase();
         fila.style.display = textoFila.includes(input) ? "" : "none";
       });
