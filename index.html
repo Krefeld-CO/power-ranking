@@ -50,24 +50,23 @@
       top: 0;
       z-index: 10;
     }
-    /* Eliminamos el contenido por defecto en th */
     th::after {
-      content: "";
+      content: "▲▼";         /* doble triángulo gris por defecto */
       position: absolute;
       right: 10px;
-      font-size: 0.8em;
-      color: transparent;
+      font-size: 0.7em;
+      color: #666666;        /* gris claro */
       user-select: none;
     }
     /* Flecha ascendente */
     th.asc::after {
       content: "▲";
-      color: #4caf50;
+      color: #4caf50;        /* verde */
     }
     /* Flecha descendente */
     th.desc::after {
       content: "▼";
-      color: #f44336;
+      color: #f44336;        /* rojo */
     }
     td {
       color: #dddddd;
