@@ -3,28 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Power Ranking</title>
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"/>
+  <title>Power Ranking Torneo</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
       padding: 20px;
+      background-color: #f7f7f7;
     }
     h1 {
       text-align: center;
     }
     table {
       width: 100%;
-      margin-top: 20px;
+      border-collapse: collapse;
+      background-color: white;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #eee;
     }
   </style>
 </head>
 <body>
-  <h1>Power Ranking</h1>
-  <table id="ranking" class="display"></table>
+  <h1>Power Ranking Torneo</h1>
+  <table id="tabla-ranking">
+    <thead>
+      <tr>
+        <th>Jugador</th>
+        <th>Score</th>
+        <th>W</th>
+        <th>L</th>
+        <th>WR</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script>
-    $(document).ready(function () {
-      fetch("https://opensheet.elk.sh/1in-uoSlavwHjXlUQMfZuXwWJPGMIqeWFZVb9-YF_AVI/Power Ranking")
+    // ID de tu hoja de cálculo
+    const sheetID = "1in-uoSlawwHjXlUQMfZuXwWJPGMlqeWFZVb9-YF_AVI";
+    const sheetName = "Power Ranking";
+    const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const tabla = document.querySelector("#tabla-ranking tbody");
+        data.forEach(jugador => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${jugador["Jugador"]}</td>
+            <td>${jugador["Score"]}</td>
+            <td>${jugador["W"]}</td>
+            <td>${jugador["L"]}</td>
+            <td>${jugador["WR"]}</td>
+          `;
+          tabla.appendChild(row);
+        });
+      })
+      .catch(error => console.error("Error al obtener los datos:", error));
+  </script>
+</body>
+</html>
