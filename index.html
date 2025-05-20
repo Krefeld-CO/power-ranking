@@ -102,8 +102,7 @@
             celda.appendChild(icono);
             celda.addEventListener("click", () => ordenarPorColumna(j));
           } else {
-            if (j === 1) {
-              // Mostrar imagen en la segunda columna
+            if ([1, 2, 3].includes(j)) {
               const img = document.createElement("img");
               img.src = col;
               img.alt = "Imagen";
