@@ -65,6 +65,21 @@
     tr:nth-child(even) td {
       background-color: #141414;
     }
+
+    /* Nueva clase para fila de detalles */
+    .detalle-fila {
+      display: none;
+      background-color: #222;
+    }
+    .detalle-fila td {
+      text-align: left;
+      padding: 10px;
+      font-size: 14px;
+      color: #ccc;
+    }
+    .fila-jugador {
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -102,7 +117,35 @@
           tr.appendChild(celda);
         });
 
+        if (i > 0) tr.classList.add("fila-jugador");
         tabla.appendChild(tr);
+
+        // Agregar fila de detalle justo debajo de cada fila de jugador
+        if (i > 0) {
+          const trDetalle = document.createElement("tr");
+          trDetalle.classList.add("detalle-fila");
+
+          const tdDetalle = document.createElement("td");
+          tdDetalle.setAttribute("colspan", fila.length);
+          tdDetalle.innerHTML = `<strong>Resumen:</strong> Información extra de <em>${fila[1]}</em>.`;
+
+          trDetalle.appendChild(tdDetalle);
+          tabla.appendChild(trDetalle);
+        }
+      });
+
+      agregarEventosFila();
+    }
+
+    function agregarEventosFila() {
+      const filas = document.querySelectorAll(".fila-jugador");
+      filas.forEach((fila, i) => {
+        fila.addEventListener("click", () => {
+          const filaDetalle = fila.nextElementSibling;
+          if (filaDetalle && filaDetalle.classList.contains("detalle-fila")) {
+            filaDetalle.style.display = filaDetalle.style.display === "table-row" ? "none" : "table-row";
+          }
+        });
       });
     }
 
