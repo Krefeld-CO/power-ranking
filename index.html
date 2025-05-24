@@ -66,7 +66,6 @@
       background-color: #141414;
     }
 
-    /* Nueva clase para fila de detalles */
     .detalle-fila {
       display: none;
       background-color: #222;
@@ -97,7 +96,22 @@
       const tabla = document.getElementById("tabla");
       tabla.innerHTML = "";
 
-      datos.forEach((fila, i) => {
+      const encabezadoOriginal = datos[0];
+      const encabezado = ["Rank", ...encabezadoOriginal.slice(2)]; // Omitir columnas 0 y 1
+
+      const filas = datos.slice(1);
+
+      const datosConRank = [encabezado, ...filas.map((fila, index) => {
+        const rankAnterior = fila[0]?.trim();
+        const esNuevo = !rankAnterior;
+        const nombre = fila[2];
+
+        const estrella = esNuevo ? ' ⭐ <span style="color: #00bfff;">Nuevo retador</span>' : '';
+        const rank = `${index + 1}${estrella}`;
+        return [rank, ...fila.slice(2)];
+      })];
+
+      datosConRank.forEach((fila, i) => {
         const tr = document.createElement("tr");
 
         fila.forEach((col, j) => {
@@ -111,7 +125,7 @@
             celda.appendChild(icono);
             celda.addEventListener("click", () => ordenarPorColumna(j));
           } else {
-            celda.textContent = col;
+            celda.innerHTML = col;
           }
 
           tr.appendChild(celda);
@@ -120,7 +134,6 @@
         if (i > 0) tr.classList.add("fila-jugador");
         tabla.appendChild(tr);
 
-        // Agregar fila de detalle justo debajo de cada fila de jugador
         if (i > 0) {
           const trDetalle = document.createElement("tr");
           trDetalle.classList.add("detalle-fila");
@@ -139,7 +152,7 @@
 
     function agregarEventosFila() {
       const filas = document.querySelectorAll(".fila-jugador");
-      filas.forEach((fila, i) => {
+      filas.forEach((fila) => {
         fila.addEventListener("click", () => {
           const filaDetalle = fila.nextElementSibling;
           if (filaDetalle && filaDetalle.classList.contains("detalle-fila")) {
