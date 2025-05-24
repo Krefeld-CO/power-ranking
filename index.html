@@ -178,14 +178,14 @@
                   const indicador = document.createElement("span");
                   indicador.style.color = "#00ff00";
                   indicador.style.marginLeft = "8px";
-                  indicador.textContent = ▲${diff};
+                  indicador.textContent = `▲${diff}`;
                   contenedor.appendChild(indicador);
                 } else if (diff < 0) {
                   // Bajó puestos
                   const indicador = document.createElement("span");
                   indicador.style.color = "#ff3333";
                   indicador.style.marginLeft = "8px";
-                  indicador.textContent = ▼${Math.abs(diff)};
+                  indicador.textContent = `▼${Math.abs(diff)}`;
                   contenedor.appendChild(indicador);
                 }
                 // Si no hay cambio, no muestra nada extra
@@ -210,7 +210,7 @@
 
           const tdDetalle = document.createElement("td");
           tdDetalle.setAttribute("colspan", fila.length);
-          tdDetalle.innerHTML = <strong>Resumen:</strong> Información extra de <em>${fila[1]}</em>.;
+          tdDetalle.innerHTML = `<strong>Resumen:</strong> Información extra de <em>${fila[1]}</em>.`;
 
           trDetalle.appendChild(tdDetalle);
           tabla.appendChild(trDetalle);
