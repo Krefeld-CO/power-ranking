@@ -65,8 +65,6 @@
     tr:nth-child(even) td {
       background-color: #141414;
     }
-
-    /* Nueva clase para fila de detalles */
     .detalle-fila {
       display: none;
       background-color: #222;
@@ -80,8 +78,6 @@
     .fila-jugador {
       cursor: pointer;
     }
-
-    /* Estilo para la estrella azul */
     .estrella-nuevo {
       color: #00aaff;
       font-weight: bold;
@@ -116,6 +112,13 @@
       visibility: visible;
       opacity: 1;
     }
+
+    /* Ocultar visualmente la columna "Ranking Anterior" (columna 0) */
+    #tabla td:nth-child(1),
+    #tabla th:nth-child(1) {
+      display: none;
+    }
+
   </style>
 </head>
 <body>
@@ -137,10 +140,11 @@
         const tr = document.createElement("tr");
 
         fila.forEach((col, j) => {
+          if (j === 0) return; // 👈 Ocultamos la columna 0 directamente en la generación de tabla
+
           const celda = document.createElement(i === 0 ? "th" : "td");
 
           if (i === 0) {
-            // Encabezados
             celda.textContent = col;
             const icono = document.createElement("span");
             icono.classList.add("icono");
@@ -148,18 +152,14 @@
             celda.appendChild(icono);
             celda.addEventListener("click", () => ordenarPorColumna(j));
           } else {
-            // Contenido fila jugador
             if (j === 1) {
-              // Columna del nombre jugador, añadimos indicador de nuevo retador o cambio en ranking
-              const posAnterior = parseInt(fila[0]); // ranking anterior (col 1, índice 0)
-              const posActual = parseInt(fila[1]);   // ranking actual (col 2, índice 1)
+              const posAnterior = parseInt(fila[0]);
+              const posActual = parseInt(fila[1]);
 
-              // Contenedor para nombre + indicador
               const contenedor = document.createElement("span");
               contenedor.textContent = col;
 
               if (isNaN(posAnterior) || posAnterior === 0) {
-                // Nuevo retador
                 const estrella = document.createElement("span");
                 estrella.classList.add("estrella-nuevo", "tooltip-nuevo");
                 estrella.textContent = "★";
@@ -171,24 +171,20 @@
                 estrella.appendChild(tooltip);
                 contenedor.appendChild(estrella);
               } else {
-                // Calcular diferencia de puestos
                 const diff = posAnterior - posActual;
                 if (diff > 0) {
-                  // Subió puestos
                   const indicador = document.createElement("span");
                   indicador.style.color = "#00ff00";
                   indicador.style.marginLeft = "8px";
                   indicador.textContent = `▲${diff}`;
                   contenedor.appendChild(indicador);
                 } else if (diff < 0) {
-                  // Bajó puestos
                   const indicador = document.createElement("span");
                   indicador.style.color = "#ff3333";
                   indicador.style.marginLeft = "8px";
                   indicador.textContent = `▼${Math.abs(diff)}`;
                   contenedor.appendChild(indicador);
                 }
-                // Si no hay cambio, no muestra nada extra
               }
 
               celda.appendChild(contenedor);
@@ -203,13 +199,12 @@
         if (i > 0) tr.classList.add("fila-jugador");
         tabla.appendChild(tr);
 
-        // Agregar fila de detalle justo debajo de cada fila de jugador
         if (i > 0) {
           const trDetalle = document.createElement("tr");
           trDetalle.classList.add("detalle-fila");
 
           const tdDetalle = document.createElement("td");
-          tdDetalle.setAttribute("colspan", fila.length);
+          tdDetalle.setAttribute("colspan", fila.length - 1); // ajustar por columna oculta
           tdDetalle.innerHTML = `<strong>Resumen:</strong> Información extra de <em>${fila[1]}</em>.`;
 
           trDetalle.appendChild(tdDetalle);
@@ -260,7 +255,7 @@
         th.classList.remove("asc", "desc");
         const icono = th.querySelector(".icono");
         if (icono) {
-          if (i === columnaSeleccionada) {
+          if (i === columnaSeleccionada - 1) { // ajustar índice por columna oculta
             if (ascendente) {
               th.classList.add("asc");
               icono.textContent = "▲";
