@@ -137,7 +137,9 @@
         const tr = document.createElement("tr");
 
         fila.forEach((col, j) => {
-          const celda = document.createElement(i === 0 ? "th" : "td");
+  if (j === 0) return; // Omitir la columna "Ranking Anterior"
+
+  const celda = document.createElement(i === 0 ? "th" : "td");
 
           if (i === 0) {
             // Encabezados
@@ -209,7 +211,7 @@
           trDetalle.classList.add("detalle-fila");
 
           const tdDetalle = document.createElement("td");
-          tdDetalle.setAttribute("colspan", fila.length);
+          tdDetalle.setAttribute("colspan", fila.length - 1); // Restar la columna oculta
           tdDetalle.innerHTML = `<strong>Resumen:</strong> Información extra de <em>${fila[1]}</em>.`;
 
           trDetalle.appendChild(tdDetalle);
