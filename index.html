@@ -137,7 +137,7 @@
         const tr = document.createElement("tr");
 
         fila.forEach((col, j) => {
-  if (j === 0 || j === 14) return; // Omitir columnas: 0 ("Ranking Anterior") y 14 ("Resumen")
+  if (j === 0 || j === 13) return; // Omitir columnas: 0 ("Ranking Anterior") y 13 ("Resumen")
 
   const celda = document.createElement(i === 0 ? "th" : "td");
 
@@ -212,7 +212,7 @@
 
           const tdDetalle = document.createElement("td");
           tdDetalle.setAttribute("colspan", fila.length - 1); // Restar la columna oculta
-          tdDetalle.innerHTML = `<strong>Resumen:</strong> ${fila[14] || 'Sin información disponible.'}`;
+          tdDetalle.innerHTML = `<strong>Resumen:</strong> ${fila[13] || 'Sin información disponible.'}`;
 
           trDetalle.appendChild(tdDetalle);
           tabla.appendChild(trDetalle);
