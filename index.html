@@ -212,7 +212,7 @@
 
           const tdDetalle = document.createElement("td");
           tdDetalle.setAttribute("colspan", fila.length - 1); // Restar la columna oculta
-          tdDetalle.innerHTML = `<strong>Resumen:</strong> Información extra de <em>${fila[2]}</em>.`;
+          tdDetalle.innerHTML = `<strong>Resumen:</strong> ${fila[10] || 'Sin información disponible.'}`;
 
           trDetalle.appendChild(tdDetalle);
           tabla.appendChild(trDetalle);
